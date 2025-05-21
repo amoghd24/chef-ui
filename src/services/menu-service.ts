@@ -41,6 +41,23 @@ export interface PredictionResponse {
   }
 }
 
+export interface PastPrediction {
+  id: number;
+  name: string;
+  created_at: string;
+  party_order: {
+    id: number;
+    party_size: number;
+    created_at: string;
+    menu: {
+      id: number;
+      name: string;
+    }
+  };
+  predictions?: PredictionCourse[];
+  [key: string]: any;
+}
+
 export interface QuantityPrediction {
   dish_id: string | number; // Allow either string or number
   dish_name: string;
@@ -103,6 +120,51 @@ export const MenuService = {
       return predictions;
     } catch (error) {
       console.error("Failed to predict quantities", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Fetch past predictions
+   * @param userId Optional user ID to filter results
+   */
+  getPastPredictions: async (userId?: string | number): Promise<PastPrediction[]> => {
+    try {
+      // Add user filter if userId is provided
+      const endpoint = userId 
+        ? `/api/predicted_quantities/?user=${userId}`
+        : `/api/predicted_quantities/`;
+        
+      const response = await api.get<any>(endpoint);
+      
+      // Check if the response has a 'results' property (pagination)
+      if (response.data && 'results' in response.data) {
+        return response.data.results;
+      }
+      
+      // Check if it's an array
+      if (Array.isArray(response.data)) {
+        return response.data;
+      }
+      
+      // If it's neither, return an empty array
+      return [];
+    } catch (error) {
+      console.error("Failed to fetch past predictions", error);
+      // Return empty array instead of throwing to handle gracefully
+      return [];
+    }
+  },
+
+  /**
+   * Get details of a specific prediction
+   */
+  getPredictionDetails: async (id: number): Promise<PastPrediction> => {
+    try {
+      const response = await api.get<PastPrediction>(`/api/predicted_quantities/${id}/`);
+      return response.data;
+    } catch (error) {
+      console.error(`Failed to fetch prediction details for ID ${id}`, error);
       throw error;
     }
   }
