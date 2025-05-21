@@ -148,7 +148,7 @@ const DashboardPage: React.FC = () => {
                       <td className="p-3">{formatDate(prediction.created_at)}</td>
                       <td className="p-3 text-right">
                         <Link 
-                          to={`/menu-planner?predictionId=${prediction.id}`}
+                          to={`/predictions/${prediction.id}`}
                           className="text-primary hover:text-primary/80 text-sm font-medium"
                         >
                           View Details

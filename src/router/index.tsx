@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom"
 import LoginPage from "@/pages/login";
 import DashboardPage from "@/pages/dashboard";
 import MenuPlannerPage from "@/pages/menu-planner";
+import PredictionDetailsPage from "@/pages/prediction-details";
 import { useAuthStore } from "@/store/use-auth-store";
 
 // Auth protected route component
@@ -28,6 +29,10 @@ const routes = [
   {
     path: "/menu-planner",
     element: <ProtectedRoute><MenuPlannerPage /></ProtectedRoute>,
+  },
+  {
+    path: "/predictions/:id",
+    element: <ProtectedRoute><PredictionDetailsPage /></ProtectedRoute>,
   },
   {
     path: "*",
