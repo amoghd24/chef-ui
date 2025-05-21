@@ -1,6 +1,18 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { MainLayout } from "@/components/layouts/MainLayout";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import LoginPage from "@/pages/login";
+import DashboardPage from "@/pages/dashboard";
+import { useAuthStore } from "@/store/use-auth-store";
+
+// Auth protected route component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated } = useAuthStore();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return <>{children}</>;
+};
 
 // Create routes configuration
 const routes = [
@@ -10,21 +22,11 @@ const routes = [
   },
   {
     path: "/dashboard",
-    element: <MainLayout />,
-    children: [
-      {
-        index: true,
-        element: <div className="p-10 text-center">
-          <h1 className="text-4xl font-bold mb-4">Dashboard</h1>
-          <p className="text-xl mb-6">Welcome to your dashboard</p>
-        </div>,
-      },
-      // Add more routes here as needed
-      {
-        path: "*",
-        element: <div className="p-10 text-center">Page not found</div>,
-      },
-    ],
+    element: <ProtectedRoute><DashboardPage /></ProtectedRoute>,
+  },
+  {
+    path: "*",
+    element: <div className="p-10 text-center">Page not found</div>,
   },
 ];
 

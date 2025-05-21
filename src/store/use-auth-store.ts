@@ -1,21 +1,15 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { AuthService } from '@/services/auth-service';
+import { UserProfile } from '@/types';
 
 // Define the type for the auth state
 interface AuthState {
   isAuthenticated: boolean;
-  user: User | null;
+  user: UserProfile | null;
   token: string | null;
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
-}
-
-// User type
-interface User {
-  id: string;
-  name: string;
-  username: string;
-  role: string;
 }
 
 // Create the auth store with persistence
@@ -26,26 +20,22 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       
-      // Login function - in a real app, this would call an API
+      // Login function using the AuthService
       login: async (username: string, password: string) => {
         try {
-          // Simulate API call
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          // Call the real API through our service
+          const response = await AuthService.login({ username, password });
           
-          // For demo purposes, hard-coded validation
-          // In a real app, this would validate against an API
-          if (username === 'demo' && password === 'password') {
-            const user = {
-              id: '1',
-              name: 'Demo User',
-              username: 'demo',
-              role: 'user',
-            };
-            
+          if (response && response.token) {
             set({ 
               isAuthenticated: true, 
-              user, 
-              token: 'demo-token-12345' 
+              user: response.user || {
+                id: '1',
+                username,
+                name: username,
+                role: 'user',
+              },
+              token: response.token 
             });
             
             return true;
@@ -57,8 +47,11 @@ export const useAuthStore = create<AuthState>()(
         }
       },
       
-      // Logout function
+      // Logout function using the AuthService
       logout: () => {
+        // Call the logout method from our service
+        AuthService.logout();
+        
         set({ 
           isAuthenticated: false, 
           user: null, 
