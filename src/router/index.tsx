@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import LoginPage from "@/pages/login";
 import DashboardPage from "@/pages/dashboard";
+import MenuPlannerPage from "@/pages/menu-planner";
 import { useAuthStore } from "@/store/use-auth-store";
 
 // Auth protected route component
@@ -23,6 +24,10 @@ const routes = [
   {
     path: "/dashboard",
     element: <ProtectedRoute><DashboardPage /></ProtectedRoute>,
+  },
+  {
+    path: "/menu-planner",
+    element: <ProtectedRoute><MenuPlannerPage /></ProtectedRoute>,
   },
   {
     path: "*",
